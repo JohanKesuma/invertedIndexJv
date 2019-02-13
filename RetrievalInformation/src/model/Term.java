@@ -9,6 +9,14 @@ package model;
  *
  * @author admin
  */
-public class Index {
-    
+public class Term {
+
+    private String term;
+    private PostingList termList;
+
+    public Term(String term, PostingList termList) {
+        this.term = term;
+        this.termList = termList;
+    }
+
 }

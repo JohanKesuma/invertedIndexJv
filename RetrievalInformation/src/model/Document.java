@@ -48,4 +48,7 @@ public class Document {
         this.id = id;
     }
     
+    public String[] getListTerm(){
+        return null;
+    }
 }

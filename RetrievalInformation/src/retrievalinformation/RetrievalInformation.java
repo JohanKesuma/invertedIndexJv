@@ -5,6 +5,8 @@
  */
 package retrievalinformation;
 
+import model.Document;
+
 /**
  *
  * @author admin
@@ -15,7 +17,7 @@ public class RetrievalInformation {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        Document document = new Document();
     }
-    
+
 }
