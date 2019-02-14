@@ -5,14 +5,8 @@
  */
 package retrievalinformation;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import model.Document;
 import model.InvertedIndex;
-import model.Posting;
-import model.TempTerm;
-import model.Term;
 
 /**
  *
