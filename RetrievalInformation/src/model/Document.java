@@ -51,4 +51,8 @@ public class Document {
     public String[] getListTerm(){
         return null;
     }
+    
+    public static String[] toTerms(String  content){
+        return content.split(" ");
+    }
 }

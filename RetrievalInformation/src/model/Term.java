@@ -14,8 +14,40 @@ public class Term {
     private String term;
     private PostingList termList;
 
+    public Term() {
+        termList = new PostingList();
+    }
+
     public Term(String term, PostingList termList) {
         this.term = term;
+        this.termList = termList;
+    }
+
+    /**
+     * @return the term
+     */
+    public String getTerm() {
+        return term;
+    }
+
+    /**
+     * @return the termList
+     */
+    public PostingList getTermList() {
+        return termList;
+    }
+
+    /**
+     * @param term the term to set
+     */
+    public void setTerm(String term) {
+        this.term = term;
+    }
+
+    /**
+     * @param termList the termList to set
+     */
+    public void setTermList(PostingList termList) {
         this.termList = termList;
     }
 

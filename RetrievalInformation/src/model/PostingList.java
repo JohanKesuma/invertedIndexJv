@@ -24,4 +24,20 @@ public class PostingList {
         this.postings = new ArrayList<>();
     }
 
+    /**
+     * @return the postings
+     */
+    public ArrayList<Posting> getPostings() {
+        return postings;
+    }
+
+    /**
+     * @param postings the postings to set
+     */
+    public void setPostings(ArrayList<Posting> postings) {
+        this.postings = postings;
+    }
+    
+    
+
 }
