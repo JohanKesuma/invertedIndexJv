@@ -58,11 +58,11 @@ public class InvertedIndex {
     public static InvertedIndex toInvertedIndex(Document[] documents) {
         InvertedIndex invertedIndex = new InvertedIndex();
 
-        List<TempTerm> tempTerms = new LinkedList<>();
+        List<Posting> tempTerms = new ArrayList<>();
         for (int i = 0; i < documents.length; i++) {
             String[] terms = Document.toTerms(documents[i].getContent().toLowerCase());
             for (int j = 0; j < terms.length; j++) {
-                TempTerm t = new TempTerm(terms[j], documents[i]);
+                Posting t = new Posting(terms[j], documents[i]);
                 tempTerms.add(t);
             }
         }
@@ -88,15 +88,15 @@ public class InvertedIndex {
                 if (tempTerms.get(i).getTerm()
                         .equalsIgnoreCase(tempTerms.get(i - 1).getTerm())) {
                     if (tempTerms.get(i).getDocument().getId() != tempTerms.get(i - 1).getDocument().getId()) {
-                        Posting posting = new Posting(tempTerms.get(i).getDocument());
+                        Posting posting = tempTerms.get(i);
                         term.getTermList().getPostings().add(posting);
                     }
                 } else {
-                    Posting posting = new Posting(tempTerms.get(i).getDocument());
+                    Posting posting = tempTerms.get(i);
                     term.getTermList().getPostings().add(posting);
                 }
             } else {
-                Posting posting = new Posting(tempTerms.get(i).getDocument());
+                Posting posting = tempTerms.get(i);
                 term.getTermList().getPostings().add(posting);
             }
             if (i < tempTerms.size() - 1) {

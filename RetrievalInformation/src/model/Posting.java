@@ -9,7 +9,9 @@ package model;
  *
  * @author admin
  */
-public class Posting {
+public class Posting implements Comparable<Posting>{
+
+    private String term;
     private Document document;
 
     public Posting() {
@@ -17,6 +19,19 @@ public class Posting {
 
     public Posting(Document document) {
         this.document = document;
+    }
+
+    public Posting(String term, Document document) {
+        this.term = term;
+        this.document = document;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
     }
 
     /**
@@ -32,6 +47,17 @@ public class Posting {
     public void setDocument(Document document) {
         this.document = document;
     }
+
+    @Override
+    public int compareTo(Posting o) {
+        return this.term.compareTo(o.term);
+    }
     
-    
+    @Override
+    public String toString(){
+        String string = this.term + " -> "+ this.document.getId();
+        
+        return string;
+    }
+
 }

@@ -27,7 +27,7 @@ public class RetrievalInformation {
         documents[1].setContent("Candi Prambanan dibangun oleh Bandung Bandawasa");
         documents[2] = new Document();
         documents[2].setId(3);
-        documents[2].setContent("Prambanan merupakan nama sebuah kota yang ada seru");
+        documents[2].setContent("Prambanan merupakan nama sebuah kota yang ada di Yogyakarta");
         
         InvertedIndex invertedIndex = InvertedIndex.toInvertedIndex(documents);
 
