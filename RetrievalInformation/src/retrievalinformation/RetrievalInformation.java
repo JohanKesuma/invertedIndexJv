@@ -18,18 +18,18 @@ public class RetrievalInformation {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Document[] documents = new Document[3];
-        documents[0] = new Document();
-        documents[0].setId(1);
-        documents[0].setContent("Candi borobudur merupakan candi terbesar yang ada di Indonesia");
-        documents[1] = new Document();
-        documents[1].setId(2);
-        documents[1].setContent("Candi Prambanan dibangun oleh Bandung Bandawasa");
-        documents[2] = new Document();
-        documents[2].setId(3);
-        documents[2].setContent("Prambanan merupakan nama sebuah kota yang ada di Yogyakarta");
+        Document doc1 = new Document(1, "Candi borobudur merupakan candi terbesar yang ada di Indonesia");
+        Document doc2 = new Document(2, "Candi Prambanan dibangun oleh Bandung Bandawasa");
+        Document doc3 = new Document(3, "Prambanan merupakan nama sebuah kota yang ada di Yogyakarta");
         
-        InvertedIndex invertedIndex = InvertedIndex.toInvertedIndex(documents);
+        InvertedIndex invertedIndex = new InvertedIndex();
+        
+        invertedIndex.addNewDocument(doc1);
+        invertedIndex.addNewDocument(doc2);
+        invertedIndex.addNewDocument(doc3);
+        
+        invertedIndex.makeDictionary();
+        
 
         System.out.println("");
         System.out.println("");

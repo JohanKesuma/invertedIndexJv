@@ -7,7 +7,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,10 +15,12 @@ import java.util.List;
  */
 public class InvertedIndex {
 
+    private ArrayList<Document> documents;
     private ArrayList<Term> termList;
 
     public InvertedIndex() {
         this.termList = new ArrayList<>();
+        this.documents = new ArrayList<>();
     }
 
     public InvertedIndex(ArrayList<Term> termList) {
@@ -39,6 +40,14 @@ public class InvertedIndex {
     public void setTermList(ArrayList<Term> termList) {
         this.termList = termList;
     }
+    
+    public void addNewDocument(Document document){
+        this.documents.add(document);
+    }
+    
+    public int getDocumentSize(){
+        return this.documents.size();
+    }
 
     @Override
     public String toString() {
@@ -54,64 +63,121 @@ public class InvertedIndex {
 
         return string;
     }
-
-    public static InvertedIndex toInvertedIndex(Document[] documents) {
-        InvertedIndex invertedIndex = new InvertedIndex();
-
-        List<Posting> tempTerms = new ArrayList<>();
-        for (int i = 0; i < documents.length; i++) {
-            String[] terms = Document.toTerms(documents[i].getContent().toLowerCase());
+    
+    public ArrayList<Posting> getUnsortedIndex(){
+        ArrayList<Posting> postingList = new ArrayList<>();
+        for (int i = 0; i < getDocumentSize(); i++) {
+            String[] terms = Document.toTerms(this.documents.get(i).getContent().toLowerCase());
             for (int j = 0; j < terms.length; j++) {
-                Posting t = new Posting(terms[j], documents[i]);
-                tempTerms.add(t);
+                Posting t = new Posting(terms[j], this.documents.get(i));
+                postingList.add(t);
             }
         }
-
-        for (int i = 0; i < tempTerms.size(); i++) {
-            System.out.println(tempTerms.get(i).toString());
-        }
-
-        System.out.println("");
-        System.out.println("Sorted");
-        Collections.sort(tempTerms);
-
-        for (int i = 0; i < tempTerms.size(); i++) {
-            System.out.println(tempTerms.get(i).toString());
-        }
-
+        
+        return postingList;
+    }
+    
+    public ArrayList<Posting> getSortedIndex(){
+        ArrayList<Posting> postingList = this.getUnsortedIndex();
+        
+        Collections.sort(postingList);
+        
+        return  postingList;
+    }
+    
+    public void makeDictionary(){
+        ArrayList<Posting> postingList = this.getSortedIndex();
+        
         Term term = new Term();
-        for (int i = 0; i < tempTerms.size(); i++) {
+        for (int i = 0; i < postingList.size(); i++) {
 
-            term.setTerm(tempTerms.get(i).getTerm());
+            term.setTerm(postingList.get(i).getTerm());
 
             if (i > 0) {
-                if (tempTerms.get(i).getTerm()
-                        .equalsIgnoreCase(tempTerms.get(i - 1).getTerm())) {
-                    if (tempTerms.get(i).getDocument().getId() != tempTerms.get(i - 1).getDocument().getId()) {
-                        Posting posting = tempTerms.get(i);
+                if (postingList.get(i).getTerm()
+                        .equalsIgnoreCase(postingList.get(i - 1).getTerm())) {
+                    if (postingList.get(i).getDocument().getId() != postingList.get(i - 1).getDocument().getId()) {
+                        Posting posting = postingList.get(i);
                         term.getTermList().getPostings().add(posting);
                     }
                 } else {
-                    Posting posting = tempTerms.get(i);
+                    Posting posting = postingList.get(i);
                     term.getTermList().getPostings().add(posting);
                 }
             } else {
-                Posting posting = tempTerms.get(i);
+                Posting posting = postingList.get(i);
                 term.getTermList().getPostings().add(posting);
             }
-            if (i < tempTerms.size() - 1) {
-                if (!tempTerms.get(i).getTerm()
-                        .equalsIgnoreCase(tempTerms.get(i + 1).getTerm())) {
-                    invertedIndex.getTermList().add(term);
+            if (i < postingList.size() - 1) {
+                if (!postingList.get(i).getTerm()
+                        .equalsIgnoreCase(postingList.get(i + 1).getTerm())) {
+                    getTermList().add(term);
                     term = new Term();
                 }
             } else {
-                invertedIndex.getTermList().add(term);
+                getTermList().add(term);
             }
 
         }
-
-        return invertedIndex;
     }
+
+//    public static InvertedIndex toInvertedIndex(Document[] documents) {
+//        InvertedIndex invertedIndex = new InvertedIndex();
+//
+//        List<Posting> tempTerms = new ArrayList<>();
+//        for (int i = 0; i < documents.length; i++) {
+//            String[] terms = Document.toTerms(documents[i].getContent().toLowerCase());
+//            for (int j = 0; j < terms.length; j++) {
+//                Posting t = new Posting(terms[j], documents[i]);
+//                tempTerms.add(t);
+//            }
+//        }
+//
+//        for (int i = 0; i < tempTerms.size(); i++) {
+//            System.out.println(tempTerms.get(i).toString());
+//        }
+//
+//        System.out.println("");
+//        System.out.println("Sorted");
+//        Collections.sort(tempTerms);
+//
+//        for (int i = 0; i < tempTerms.size(); i++) {
+//            System.out.println(tempTerms.get(i).toString());
+//        }
+//
+//        Term term = new Term();
+//        for (int i = 0; i < tempTerms.size(); i++) {
+//
+//            term.setTerm(tempTerms.get(i).getTerm());
+//
+//            if (i > 0) {
+//                if (tempTerms.get(i).getTerm()
+//                        .equalsIgnoreCase(tempTerms.get(i - 1).getTerm())) {
+//                    if (tempTerms.get(i).getDocument().getId() != tempTerms.get(i - 1).getDocument().getId()) {
+//                        Posting posting = tempTerms.get(i);
+//                        term.getTermList().getPostings().add(posting);
+//                    }
+//                } else {
+//                    Posting posting = tempTerms.get(i);
+//                    term.getTermList().getPostings().add(posting);
+//                }
+//            } else {
+//                Posting posting = tempTerms.get(i);
+//                term.getTermList().getPostings().add(posting);
+//            }
+//            if (i < tempTerms.size() - 1) {
+//                if (!tempTerms.get(i).getTerm()
+//                        .equalsIgnoreCase(tempTerms.get(i + 1).getTerm())) {
+//                    invertedIndex.getTermList().add(term);
+//                    term = new Term();
+//                }
+//            } else {
+//                invertedIndex.getTermList().add(term);
+//            }
+//
+//        }
+//
+//        return invertedIndex;
+//    }
 
 }
