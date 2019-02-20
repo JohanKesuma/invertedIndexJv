@@ -28,7 +28,7 @@ public class RetrievalInformation {
         invertedIndex.addNewDocument(doc2);
         invertedIndex.addNewDocument(doc3);
         
-        invertedIndex.makeDictionary();
+        invertedIndex.makeDictionaryV2();
         
 
         System.out.println("");

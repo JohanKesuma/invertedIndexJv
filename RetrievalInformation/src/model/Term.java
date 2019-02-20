@@ -9,7 +9,7 @@ package model;
  *
  * @author admin
  */
-public class Term {
+public class Term implements Comparable<Term> {
 
     private String term;
     private PostingList termList;
@@ -21,6 +21,11 @@ public class Term {
     public Term(String term, PostingList termList) {
         this.term = term;
         this.termList = termList;
+    }
+
+    public Term(String term) {
+        this.term = term;
+        this.termList = new PostingList();
     }
 
     /**
@@ -49,6 +54,11 @@ public class Term {
      */
     public void setTermList(PostingList termList) {
         this.termList = termList;
+    }
+
+    @Override
+    public int compareTo(Term o) {
+        return this.term.compareToIgnoreCase(o.term);
     }
 
 }
