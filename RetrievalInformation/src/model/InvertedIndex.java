@@ -119,29 +119,70 @@ public class InvertedIndex {
 
         }
     }
-    
-    public ArrayList<Posting> search(String query){
+
+    public ArrayList<Posting> search(String query) {
         makeDictionary();
         String[] q = query.split(" ");
-        
+        ArrayList<ArrayList<Posting>> postings = new ArrayList<>();
+
         for (int i = 0; i < q.length; i++) {
-            
+            postings.add(searchOneWord(q[i]));
+        }
+
+        return intersection(postings.get(0), postings.get(1));
+    }
+
+    public ArrayList<Posting> intersection(ArrayList<Posting> p1, ArrayList<Posting> p2) {
+        if (p1 == null || p2 == null) {
+            return new ArrayList<>();
         }
         
-        return null;
+        ArrayList<Posting> postings = new ArrayList<>();
+        int p1Index = 0;
+        int p2Index = 0;
+
+        Posting post1 = p1.get(p1Index);
+        Posting post2 = p2.get(p2Index);
+
+        while (true) {
+            if (post1.getDocument().getId() == post2.getDocument().getId()) {
+                try {
+                    postings.add(post1);
+                    p1Index++;
+                    p2Index++;
+                    post1 = p1.get(p1Index);
+                    post2 = p2.get(p2Index);
+                } catch (Exception e) {
+                    break;
+                }
+
+            } else if (post1.getDocument().getId() < post2.getDocument().getId()) {
+                try {
+                    p1Index++;
+                    post1 = p1.get(p1Index);
+                } catch (Exception e) {
+                    break;
+                }
+
+            } else {
+                try {
+                    p2Index++;
+                    post2 = p2.get(p2Index);
+                } catch (Exception e) {
+                    break;
+                }
+            }
+        }
+        return postings;
     }
-    
-    public ArrayList<Posting> intersection(ArrayList<Posting> p1, ArrayList<Posting> p2){
-        return null;
-    }
-    
-    public ArrayList<Posting> searchOneWord(String word){
+
+    public ArrayList<Posting> searchOneWord(String word) {
         Term tempTerm = new Term(word);
         if (getDictionary().isEmpty()) {
             // dictionary kosong
             return null;
         } else {
-            int position = Collections.binarySearch(dictionary, tempTerm);
+            int position = Collections.binarySearch(getDictionary(), tempTerm);
             if (position < 0) {
                 //tidak ditemukan
                 return null;
@@ -161,18 +202,18 @@ public class InvertedIndex {
                 getDictionary().add(term);
             } else {
                 Term tempTerm = new Term(list.get(i).getTerm());
-                
-                int position = Collections.binarySearch(dictionary, tempTerm);
+
+                int position = Collections.binarySearch(getDictionary(), tempTerm);
                 if (position < 0) {
                     tempTerm.getTermList().getPostings().add(list.get(i));
                     getDictionary().add(tempTerm);
                 } else {
-                    
+
                     getDictionary().get(position).getTermList().getPostings().add(list.get(i));
-                    Collections.sort(dictionary);
+                    Collections.sort(getDictionary());
                 }
-                
-                Collections.sort(dictionary);
+
+                Collections.sort(getDictionary());
             }
         }
 
