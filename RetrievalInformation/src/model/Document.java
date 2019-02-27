@@ -12,7 +12,7 @@ import java.util.Collections;
  *
  * @author puspaingtyas
  */
-public class Document {
+public class Document implements Comparable<Document> {
 
     private int id;
     private String content;
@@ -64,35 +64,34 @@ public class Document {
         value = value.replaceAll("[.,?!]", "");
         return value.split(" ");
     }
-    
 
     public ArrayList<Posting> getListOfPosting() {
         String[] terms = getListofTerm();
-        
+
         // menampung hasil
         ArrayList<Posting> result = new ArrayList<>();
-        
+
         for (int i = 0; i < terms.length; i++) {
             if (i == 0) {
-                
+
                 // untuk kata pertama
                 Posting tempPosting = new Posting(terms[i], this);
                 result.add(tempPosting);
             } else {
-                
+
                 // urutkan result
                 Collections.sort(result);
-                
+
                 Posting tempPosting = new Posting(terms[i], this);
-                
+
                 // cari apakah term sudah ada di dalam arraylist result
                 int pos = Collections.binarySearch(result, tempPosting);
                 if (pos < 0) { // jika tidak ketemu
-                    
+
                     result.add(tempPosting);
-                    
+
                 } else { // ika term sudah ada
-                    
+
                     // tambahkan numberOfTerm
                     int tempNumber = result.get(pos).getNumberOfTerm() + 1;
                     result.get(pos).setNumberOfTerm(tempNumber);
@@ -101,5 +100,10 @@ public class Document {
         }
 
         return result;
+    }
+
+    @Override
+    public int compareTo(Document o) {
+        return Integer.compare(this.id, o.id);
     }
 }

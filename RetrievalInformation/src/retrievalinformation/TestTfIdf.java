@@ -55,8 +55,8 @@ public class TestTfIdf {
         
         // tf
         // idf
-        String tempString2 = "silver";
-        int idDoc=2;
+        String tempString2 = "shipment";
+        int idDoc=1;
         int result4 = index.getTermFrequency(tempString2, idDoc);
         System.out.println("TF of "+tempString2+" in idDoc ="+idDoc+ " is "+result4);
         

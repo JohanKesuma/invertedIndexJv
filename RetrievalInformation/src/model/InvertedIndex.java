@@ -323,7 +323,21 @@ public class InvertedIndex {
         return Math.log10(N/n);
     }
 
-    public int getTermFrequency(String tempString2, int idDoc) {
+    public int getTermFrequency(String term, int idDoc) {
+        Document document = new Document();
+        document.setId(idDoc);
+        int pos = Collections.binarySearch(getDocuments(), document);
+        if (pos >= 0) {
+            ArrayList<Posting> tempPosting = getDocuments().get(pos).getListOfPosting();
+            Posting posting = new Posting();
+            posting.setTerm(term);
+            int postingIndex = Collections.binarySearch(tempPosting, posting);
+            if (postingIndex >= 0) {
+                return tempPosting.get(postingIndex).getNumberOfTerm();
+            }
+            return 0;
+        }
+        
         return 0;
     }
 
