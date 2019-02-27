@@ -63,6 +63,24 @@ public class InvertedIndex {
         return string;
     }
 
+    public ArrayList<Posting> getUnsortedPostingListWithTermNumber() {
+
+        ArrayList<Posting> postingList = new ArrayList<>();
+
+        for (int i = 0; i < getDocumentSize(); i++) {
+//            String[] terms = Document.toTerms(this.documents.get(i).getContent().toLowerCase());
+
+            ArrayList<Posting> postingDocument = getDocuments().get(i).getListOfPosting();
+            for (int j = 0; j < postingDocument.size(); j++) {
+
+                Posting t = postingDocument.get(j);
+                postingList.add(t);
+            }
+        }
+
+        return postingList;
+    }
+
     public ArrayList<Posting> getUnsortedIndex() {
         ArrayList<Posting> postingList = new ArrayList<>();
         for (int i = 0; i < getDocumentSize(); i++) {
@@ -74,6 +92,16 @@ public class InvertedIndex {
         }
 
         return postingList;
+    }
+
+    public ArrayList<Posting> getSortedPostingListWithTermNumber() {
+        // siapkan posting List
+        ArrayList<Posting> list = new ArrayList<>();
+        // panggil list yang belum terurut
+        list = this.getUnsortedPostingListWithTermNumber();
+        // urutkan
+        Collections.sort(list);
+        return list;
     }
 
     public ArrayList<Posting> getSortedIndex() {
@@ -119,13 +147,57 @@ public class InvertedIndex {
 
         }
     }
-    
-    public ArrayList<Posting> search(String query){
+
+    public void makeDictionaryWithTermNumber() {
+        // cek deteksi ada term yang frekuensinya lebih dari 
+        // 1 pada sebuah dokumen
+        // buat posting list term terurut
+        ArrayList<Posting> list = getSortedPostingListWithTermNumber();
+        // looping buat list of term (dictionary)
+        for (int i = 0; i < list.size(); i++) {
+            // cek dictionary kosong?
+            if (getDictionary().isEmpty()) {
+                // buat term
+                Term term = new Term(list.get(i).getTerm());
+                // tambah posting ke posting list utk term ini
+                term.getTermList().getPostings().add(list.get(i));
+                // tambah ke dictionary
+                getDictionary().add(term);
+            } else {
+                // dictionary sudah ada isinya
+                Term tempTerm = new Term(list.get(i).getTerm());
+                // pembandingan apakah term sudah ada atau belum
+                // luaran dari binarysearch adalah posisi
+                int position = Collections.binarySearch(getDictionary(), tempTerm);
+                if (position < 0) {
+                    // term baru
+                    // tambah postinglist ke term
+                    tempTerm.getTermList().getPostings().add(list.get(i));
+                    // tambahkan term ke dictionary
+                    getDictionary().add(tempTerm);
+                } else {
+                    // term ada
+                    // tambahkan postinglist saja dari existing term
+                    getDictionary().get(position).
+                            getTermList().getPostings().add(list.get(i));
+                    // urutkan posting list
+                    Collections.sort(getDictionary().get(position)
+                            .getTermList().getPostings());
+                }
+                // urutkan term dictionary
+                Collections.sort(getDictionary());
+            }
+
+        }
+
+    }
+
+    public ArrayList<Posting> search(String query) {
         makeDictionary();
-        
+
         String tempQuery[] = query.split(" ");
         ArrayList<Posting> result = new ArrayList<>();
-        
+
         for (int i = 0; i < tempQuery.length; i++) {
             String string = tempQuery[i];
             if (i == 0) {
@@ -135,7 +207,7 @@ public class InvertedIndex {
                 result = intersection(result, result1);
             }
         }
-        
+
         return result;
     }
 
@@ -143,7 +215,7 @@ public class InvertedIndex {
         if (p1 == null || p2 == null) {
             return new ArrayList<>();
         }
-        
+
         ArrayList<Posting> postings = new ArrayList<>();
         int p1Index = 0;
         int p2Index = 0;
@@ -224,6 +296,35 @@ public class InvertedIndex {
             }
         }
 
+    }
+
+    public ArrayList<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(ArrayList<Document> documents) {
+        this.documents = documents;
+    }
+
+    public int getDocumentFrequency(String term) {
+        Term tempTerm = new Term(term);
+
+        int pos = Collections.binarySearch(getDictionary(), tempTerm);
+        if (pos >= 0) {
+            return getDictionary().get(pos).getTermList().getPostings().size();
+        }
+        return 0;
+    }
+    
+    public double getInverseDocumentFreuency(String term){
+        double N = getDocumentSize();
+        double n = getDocumentFrequency(term);
+        
+        return Math.log10(N/n);
+    }
+
+    public int getTermFrequency(String tempString2, int idDoc) {
+        return 0;
     }
 
 }

@@ -61,4 +61,13 @@ public class Term implements Comparable<Term> {
         return this.term.compareToIgnoreCase(o.term);
     }
 
+    /**
+     * @return the numberOfDocument
+     */
+    public int getNumberOfDocument() {
+        return termList.getPostings().size();
+    }
+    
+    
+
 }

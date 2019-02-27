@@ -9,21 +9,25 @@ package model;
  *
  * @author admin
  */
-public class Posting implements Comparable<Posting>{
+public class Posting implements Comparable<Posting> {
 
     private String term;
     private Document document;
+    private int numberOfTerm;
 
     public Posting() {
+        numberOfTerm = 1;
     }
 
     public Posting(Document document) {
         this.document = document;
+        numberOfTerm = 1;
     }
 
     public Posting(String term, Document document) {
         this.term = term;
         this.document = document;
+        numberOfTerm = 1;
     }
 
     public String getTerm() {
@@ -52,12 +56,26 @@ public class Posting implements Comparable<Posting>{
     public int compareTo(Posting o) {
         return this.term.compareTo(o.term);
     }
-    
+
     @Override
-    public String toString(){
-        String string = this.term + " -> "+ this.document.getId();
-        
+    public String toString() {
+        String string = this.term + " -> " + this.document.getId();
+
         return string;
+    }
+
+    /**
+     * @return the numberOfTerm
+     */
+    public int getNumberOfTerm() {
+        return numberOfTerm;
+    }
+
+    /**
+     * @param numberOfTerm the numberOfTerm to set
+     */
+    public void setNumberOfTerm(int numberOfTerm) {
+        this.numberOfTerm = numberOfTerm;
     }
 
 }
