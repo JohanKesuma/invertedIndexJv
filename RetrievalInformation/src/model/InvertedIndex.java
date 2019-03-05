@@ -315,37 +315,52 @@ public class InvertedIndex {
         }
         return -1;
     }
-    
-    public double getInverseDocumentFrequency(String term){
+
+    public double getInverseDocumentFrequency(String term) {
         double N = getDocumentSize();
         double n = getDocumentFrequency(term);
-        
-        if (n == 0){
+
+        if (n == 0) {
             return 0;
         }
-        
-        return Math.log10(N/n);
+
+        return Math.log10(N / n);
     }
 
     public int getTermFrequency(String term, int idDoc) {
         Document document = new Document();
         document.setId(idDoc);
         int pos = Collections.binarySearch(getDocuments(), document);
-        
+
         if (pos >= 0) {
             ArrayList<Posting> tempPosting = getDocuments().get(pos).getListOfPosting();
-            System.out.println(tempPosting.toString());
             Posting posting = new Posting();
             posting.setTerm(term);
             int postingIndex = Collections.binarySearch(tempPosting, posting);
-            System.out.println("index : " + postingIndex);
             if (postingIndex >= 0) {
                 return tempPosting.get(postingIndex).getNumberOfTerm();
             }
-            return -1;
+            return 0;
+        }
+
+        return 0;
+    }
+
+    public ArrayList<Posting> makeTFIDF(int idDocument) {
+        ArrayList<Term> terms = getDictionary();
+        
+        ArrayList<Posting> result = new ArrayList<>();
+        for (int i = 0; i < terms.size(); i++) {
+            double weight = getTermFrequency(terms.get(i).getTerm(), idDocument) * getInverseDocumentFrequency(terms.get(i).getTerm());
+            
+            Posting tempPosting = new Posting();
+            tempPosting.setTerm(terms.get(i).getTerm());
+            tempPosting.setWeight(weight);
+            
+            result.add(tempPosting);
         }
         
-        return 0;
+        return result;
     }
 
 }
