@@ -331,15 +331,18 @@ public class InvertedIndex {
         Document document = new Document();
         document.setId(idDoc);
         int pos = Collections.binarySearch(getDocuments(), document);
+        
         if (pos >= 0) {
             ArrayList<Posting> tempPosting = getDocuments().get(pos).getListOfPosting();
+            System.out.println(tempPosting.toString());
             Posting posting = new Posting();
             posting.setTerm(term);
             int postingIndex = Collections.binarySearch(tempPosting, posting);
+            System.out.println("index : " + postingIndex);
             if (postingIndex >= 0) {
                 return tempPosting.get(postingIndex).getNumberOfTerm();
             }
-            return 0;
+            return -1;
         }
         
         return 0;

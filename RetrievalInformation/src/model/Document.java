@@ -98,6 +98,7 @@ public class Document implements Comparable<Document> {
                 }
             }
         }
+        Collections.sort(result);
 
         return result;
     }
