@@ -313,12 +313,16 @@ public class InvertedIndex {
         if (pos >= 0) {
             return getDictionary().get(pos).getTermList().getPostings().size();
         }
-        return 0;
+        return -1;
     }
     
-    public double getInverseDocumentFreuency(String term){
+    public double getInverseDocumentFrequency(String term){
         double N = getDocumentSize();
         double n = getDocumentFrequency(term);
+        
+        if (n == 0){
+            return 0;
+        }
         
         return Math.log10(N/n);
     }
