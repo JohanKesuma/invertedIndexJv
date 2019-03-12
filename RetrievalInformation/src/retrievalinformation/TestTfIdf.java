@@ -49,7 +49,7 @@ public class TestTfIdf {
         System.out.println("Number of Doc with "+tempString+" is "+result2);
         
         // idf
-        String tempString1 = "arrived";
+        String tempString1 = "truck";
         double result3 = index.getInverseDocumentFrequency(tempString1);
         System.out.println("IDF of "+tempString1+" is "+result3);
         

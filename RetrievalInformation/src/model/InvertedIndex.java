@@ -320,7 +320,7 @@ public class InvertedIndex {
         double N = getDocumentSize();
         double n = getDocumentFrequency(term);
 
-        if (n == 0) {
+        if (n < 0) {
             return 0;
         }
 
@@ -347,19 +347,57 @@ public class InvertedIndex {
     }
 
     public ArrayList<Posting> makeTFIDF(int idDocument) {
-        ArrayList<Term> terms = getDictionary();
-        
-        ArrayList<Posting> result = new ArrayList<>();
-        for (int i = 0; i < terms.size(); i++) {
-            double weight = getTermFrequency(terms.get(i).getTerm(), idDocument) * getInverseDocumentFrequency(terms.get(i).getTerm());
-            
-            Posting tempPosting = new Posting();
-            tempPosting.setTerm(terms.get(i).getTerm());
-            tempPosting.setWeight(weight);
-            
-            result.add(tempPosting);
+        Document doc = new Document();
+        doc.setId(idDocument);
+        int pos = Collections.binarySearch(getDocuments(), doc);
+        if (pos < 0) {
+            return null;
         }
-        
+
+//        ArrayList<Term> terms = getDictionary();
+        doc = getDocuments().get(pos);
+
+        ArrayList<Posting> result = doc.getListOfPosting();
+        for (int i = 0; i < result.size(); i++) {
+            // weight = tf * idf
+            double weight = result.get(i).getNumberOfTerm() * getInverseDocumentFrequency(result.get(i).getTerm());
+
+            result.get(i).setWeight(weight);
+        }
+
+        return result;
+    }
+    
+    public ArrayList<Posting> makeQueryTFIDF(String query){
+        Document doc = new Document();
+        doc.setContent(query);
+
+        ArrayList<Posting> result = doc.getListOfPosting();
+        for (int i = 0; i < result.size(); i++) {
+            // weight = tf * idf
+            double weight = result.get(i).getNumberOfTerm() * getInverseDocumentFrequency(result.get(i).getTerm());
+
+            result.get(i).setWeight(weight);
+        }
+
+        return result;
+    }
+
+    /**
+     *
+     * @param p1 posting list1
+     * @param p2 posting list2
+     * @return hasil perkalian 2 buah postinglist
+     */
+    public double getInnerProduct(ArrayList<Posting> p1, ArrayList<Posting> p2) {
+        double result = 0;
+        for (int i = 0; i < p1.size(); i++) {
+            int pos = Collections.binarySearch(p2, p1.get(i));
+            if (pos >= 0) {
+                result = result + (p1.get(i).getWeight() * p2.get(pos).getWeight());
+            }
+        }
+
         return result;
     }
 
