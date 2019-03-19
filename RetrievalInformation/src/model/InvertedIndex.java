@@ -191,6 +191,35 @@ public class InvertedIndex {
         }
 
     }
+    
+    /**
+     * Fungsi untuk membentuk posting list dari sebuah query
+     *
+     * @param query
+     * @return
+     */
+    public ArrayList<Posting> getQueryPosting(String query) {
+        // buat dokumen
+        Document temp = new Document(-1, query);
+        // buat posting list
+        ArrayList<Posting> result = temp.getListOfPosting();
+        // hitung bobot
+        // isi bobot dari posting list
+        for (int i = 0; i < result.size(); i++) {
+            // ambil term
+            String tempTerm = result.get(i).getTerm();
+            // cari idf
+            double idf = getInverseDocumentFrequency(tempTerm);
+            // cari tf
+            int tf = result.get(i).getNumberOfTerm();
+            // hitung bobot
+            double bobot = tf * idf;
+            // set bobot pada posting
+            result.get(i).setWeight(bobot);
+        }
+        Collections.sort(result);
+        return result;
+}
 
     public ArrayList<Posting> search(String query) {
         makeDictionary();
@@ -367,8 +396,8 @@ public class InvertedIndex {
 
         return result;
     }
-    
-    public ArrayList<Posting> makeQueryTFIDF(String query){
+
+    public ArrayList<Posting> makeQueryTFIDF(String query) {
         Document doc = new Document();
         doc.setContent(query);
 
@@ -384,6 +413,21 @@ public class InvertedIndex {
     }
 
     /**
+     * Fungsi untuk menghitung panjang dari sebuah posting
+     *
+     * @param posting
+     * @return
+     */
+    public double getLengthOfPosting(ArrayList<Posting> posting) {
+        double length = 0;
+        for (int i = 0; i < posting.size(); i++) {
+            length += posting.get(i).getWeight() * posting.get(i).getWeight();
+        }
+
+        return Math.sqrt(length);
+    }
+
+    /**
      *
      * @param p1 posting list1
      * @param p2 posting list2
@@ -392,13 +436,98 @@ public class InvertedIndex {
     public double getInnerProduct(ArrayList<Posting> p1, ArrayList<Posting> p2) {
         double result = 0;
         for (int i = 0; i < p1.size(); i++) {
+            // cari kata yang sama dengan p1 index ke-i
             int pos = Collections.binarySearch(p2, p1.get(i));
             if (pos >= 0) {
+                
                 result = result + (p1.get(i).getWeight() * p2.get(pos).getWeight());
             }
         }
 
         return result;
+    }
+
+    /**
+     * Fungsi untuk menghitung cosine similarity
+     *
+     * @param posting
+     * @param posting1
+     *
+     * @return
+     */
+    public double getCosineSimilarity(ArrayList<Posting> posting,
+            ArrayList<Posting> posting1) {
+        
+        // hitung inner product dari kedua posting list
+        double innerProduct = getInnerProduct(posting, posting1);
+        
+        // hitung jarak
+        double length = getLengthOfPosting(posting) * getLengthOfPosting(posting1);
+        
+        // hitung cosine similarity
+        double cosineSimilarity = innerProduct / length;
+
+        return cosineSimilarity;
+    }
+
+    /**
+     * Fungsi untuk mencari berdasar nilai TFIDF
+     *
+     * @param query
+     * @return
+     */
+    public ArrayList<SearchingResult> searchTFIDF(String query) {
+        // buat list of searchingResult untuk menampung hasil pencarian
+        ArrayList<SearchingResult> searchingResults = new ArrayList<>();
+        
+        // hitung tfidf untuk query
+        ArrayList<Posting> queryTFIDF = makeQueryTFIDF(query);
+        
+        for (int i = 0; i < getDocumentSize(); i++) {
+            // hitung tfidf dari dokumen
+            ArrayList<Posting> documentTFIDF = makeTFIDF(getDocuments().get(i).getId());
+            
+            // hitung inner product antara query dan dokumen
+            double similarity = getInnerProduct(queryTFIDF, documentTFIDF);
+            
+            // masukkan similarity dan dokumen yang bersangkutan ke list searchingResult
+            searchingResults.add(new SearchingResult(similarity, getDocuments().get(i)));
+        }
+        
+        // urutkan searchingResults berdasar similarity terbesar
+        Collections.sort(searchingResults, Collections.reverseOrder());
+        
+        return searchingResults;
+    }
+
+    /**
+     * Fungsi untuk mencari dokumen berdasarkan cosine similarity
+     *
+     * @param query
+     * @return
+     */
+    public ArrayList<SearchingResult> searchCosineSimilarity(String query) {
+        // buat list of searchingResult untuk menampung hasil pencarian
+        ArrayList<SearchingResult> searchingResults = new ArrayList<>();
+        
+        // hitung tfidf untuk query
+        ArrayList<Posting> queryTFIDF = makeQueryTFIDF(query);
+        
+        for (int i = 0; i < getDocumentSize(); i++) {
+            // hitung tfidf dari dokumen
+            ArrayList<Posting> documentTFIDF = makeTFIDF(getDocuments().get(i).getId());
+            
+            // hitung inner product antara query dan dokumen
+            double similarity = getCosineSimilarity(queryTFIDF, documentTFIDF);
+            
+            // masukkan similarity dan dokumen yang bersangkutan ke list searchingResult
+            searchingResults.add(new SearchingResult(similarity, getDocuments().get(i)));
+        }
+        
+        // urutkan searchingResults dari similarity yang paling besar
+        Collections.sort(searchingResults, Collections.reverseOrder());
+        
+        return searchingResults;
     }
 
 }
