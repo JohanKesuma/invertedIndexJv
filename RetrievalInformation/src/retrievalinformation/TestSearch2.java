@@ -15,28 +15,31 @@ import model.SearchingResult;
  * @author johan
  */
 public class TestSearch2 {
+
     public static void main(String[] args) {
         // seting dokumen
-        Document doc1 = new Document(1, "Shipment of gold damaged in a fire");
+        Document doc1 = new Document(3, "Shipment of gold damaged in a fire");
         Document doc2 = new Document(2, "delivery of silver arrived in a silver truck");
-        Document doc3 = new Document(3, "shipment of gold arrived in a truck");
+        Document doc3 = new Document(1, "shipment of gold arrived in a truck");
 
         // buat object invertedIndex
         InvertedIndex index = new InvertedIndex();
         // tmbahkan document ke index
         index.addNewDocument(doc1);
+        index.makeDictionaryWithTermNumber();
         index.addNewDocument(doc2);
+        index.makeDictionaryWithTermNumber();
         index.addNewDocument(doc3);
         // bikin dictionary
         index.makeDictionaryWithTermNumber();
 
         // searching
-        String query = "silver gold truck";
+        String query = "silver";
         System.out.println("query = " + query);
         ArrayList<SearchingResult> hasilCari1 = index.searchTFIDF(query);
         for (int i = 0; i < hasilCari1.size(); i++) {
             SearchingResult doc = hasilCari1.get(i);
-            System.out.println("IdDokumen = " + doc.getDocument().getId()+ " : " + doc.getSimilarity());
+            System.out.println("IdDokumen = " + doc.getDocument().getId() + " : " + doc.getSimilarity());
         }
 
         // searching
@@ -46,6 +49,6 @@ public class TestSearch2 {
         for (int i = 0; i < hasilCari2.size(); i++) {
             SearchingResult doc = hasilCari2.get(i);
             System.out.println("IdDokumen = " + doc.getDocument().getId() + " : " + doc.getSimilarity());
-}
+        }
     }
 }
