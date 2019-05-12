@@ -5,9 +5,16 @@
  */
 package model;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
@@ -252,5 +259,27 @@ public class Document implements Comparable<Document> {
 
     public void setRealContent(String realContent) {
         this.realContent = realContent;
+    }
+
+public static Document readFile(int doc, File file) {
+
+        String content = "";
+        FileReader fileReader;
+        try {
+            fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String str;
+            while ((str = bufferedReader.readLine()) != null) {
+                content += str;
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Document.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Document.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Document document = new Document(doc, content);
+        document.indoStemming();
+
+        return document;
     }
 }
